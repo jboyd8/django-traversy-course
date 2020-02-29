@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from .choices import price_choices, bedroom_choices, state_choices
 
 from .models import Listing
 
@@ -25,4 +26,51 @@ def listing(request, listing_id):
     return render(request, 'listings/listing.html', context)
 
 def search(request):
-    return render(request, 'listings/search.html')
+
+    queryset_list = Listing.objects.order_by('-list_date')
+
+    #Keywords
+
+    if 'keywords' in request.GET:
+        keywords = request.GET['keywords']
+        if keywords:
+            # use doubkle underscore and icontains to searchhe whole description to see if it contains keywords
+            queryset_list = queryset_list.filter(description__icontains=keywords)
+
+    # state 
+    if 'city' in request.GET:
+        city = request.GET['city']
+        if city:
+            # use doubkle underscore and iexact to search the exact city name
+            queryset_list = queryset_list.filter(city__iexact=city)
+
+    # State
+    if 'state' in request.GET:
+        state = request.GET['state']
+        if state:
+            # use doubkle underscore and iexact to search the exact state name
+            queryset_list = queryset_list.filter(state__iexact=state)
+
+    # bedrooms
+    if 'bedrooms' in request.GET:
+        bedrooms = request.GET['bedrooms']
+        if bedrooms:
+            # use doubkle underscore and lte to get less than or equal to number
+            queryset_list = queryset_list.filter(bedrooms__lte=bedrooms)
+
+    # price
+    if 'price' in request.GET:
+        price = request.GET['price']
+        if price:
+            # use doubkle underscore and lte to get less than or equal to number
+            queryset_list = queryset_list.filter(price__lte=price)
+
+    context = {
+        'state_choices': state_choices,
+        'bedroom_choices': bedroom_choices,
+        'price_choices': price_choices,
+        'listings': queryset_list,
+        'values': request.GET
+    }
+
+    return render(request, 'listings/search.html', context)

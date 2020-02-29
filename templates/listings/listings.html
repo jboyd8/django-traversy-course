@@ -2,6 +2,8 @@
 
 {% load humanize %}
 
+{% block title %}| Browse Property Listings {% endblock %}
+
 {% block content %}
 <section id="showcase-inner" class="py-5 text-white">
     <div class="container">
@@ -79,7 +81,7 @@
           {% endfor %}
         {% else %}
           <div class="col-md-12">
-            <p>NO Listings Available</p>
+            <p>No Listings Available</p>
           </div>
         {% endif %}
 
